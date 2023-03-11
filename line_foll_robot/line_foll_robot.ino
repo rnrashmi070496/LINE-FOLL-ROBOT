@@ -11,13 +11,22 @@
 #define MOTOR2_EN_PIN PD4
 
 #define OFFSET 3
-#define TURN_SPEED 100
-#define FWD_SPEED 150
+#define TURN_SPEED 120
+#define FWD_SPEED 60
 
 int ir_sensor1_val = 0;
 int ir_sensor2_val = 0;
 int ir_sensor_bl_val = 0;
 
+bool is_mstimer_elapsed(long unsigned int * timer, uint16_t duration)
+{
+  long unsigned int diff = 0;
+  diff = millis() - *timer;
+  if(diff >= duration)
+  return true;
+  else
+  return false;
+}
 
 void setup() {
   Serial.begin(9600);  
@@ -78,20 +87,15 @@ void stop_movement()
 }
 
 void loop() {
+static long unsigned int rotation_timer;
+
 ir_sensor1_val = analogRead(IR_SENSOR1);
 ir_sensor2_val = analogRead(IR_SENSOR2);
 ir_sensor_bl_val = analogRead(IR_SENSOR3);
-static int i;
 
-// Serial.print("SENSOR 1 VAL : ");
-// Serial.println(ir_sensor1_val);
-// Serial.print("SENSOR 2 VAL : ");
-// Serial.println(ir_sensor2_val);
-
-// delay(500);
 if(ir_sensor_bl_val > 500 || ir_sensor2_val > 500 || ir_sensor1_val > 500)
 {
-  i = 0;
+  rotation_timer = millis();  
   if(ir_sensor_bl_val > 500)
   {
     move_fwd();
@@ -113,14 +117,13 @@ if(ir_sensor_bl_val > 500 || ir_sensor2_val > 500 || ir_sensor1_val > 500)
 }
 else
 {
-  if(i == 2500)
+  if(is_mstimer_elapsed(&rotation_timer, 6000))
   {
-    stop_movement();    
+    stop_movement(); 
   }  
   else
   {
     move_left();
-    i++;  
   }
 }
 
