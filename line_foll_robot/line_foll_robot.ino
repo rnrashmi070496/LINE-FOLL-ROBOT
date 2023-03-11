@@ -11,7 +11,7 @@
 #define MOTOR2_EN_PIN PD4
 
 #define OFFSET 3
-#define TURN_SPEED 120
+#define TURN_SPEED 255
 #define FWD_SPEED 60
 
 int ir_sensor1_val = 0;
@@ -62,7 +62,7 @@ void move_left()
   digitalWrite(MOTOR2_EN_PIN, 1);
 
   analogWrite(MOTOR1_LEFT_PIN, 0);
-  analogWrite(MOTOR2_RIGHT_PIN, TURN_SPEED + OFFSET);  
+  analogWrite(MOTOR2_RIGHT_PIN, TURN_SPEED);  
 
 }
 
@@ -117,7 +117,7 @@ if(ir_sensor_bl_val > 500 || ir_sensor2_val > 500 || ir_sensor1_val > 500)
 }
 else
 {
-  if(is_mstimer_elapsed(&rotation_timer, 6000))
+  if(is_mstimer_elapsed(&rotation_timer, 3000))
   {
     stop_movement(); 
   }  
