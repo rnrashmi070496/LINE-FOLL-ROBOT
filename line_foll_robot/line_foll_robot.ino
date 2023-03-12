@@ -2,17 +2,17 @@
 #define IR_SENSOR2 A1
 #define IR_SENSOR3 A2
 
-#define MOTOR1_LEFT_PIN PD5
-#define MOTOR2_RIGHT_PIN PD6
+#define MOTOR1_LEFT_PIN PD2
+#define MOTOR2_RIGHT_PIN PD4
 #define MOTOR1_LEFT_L_PIN PD7
-#define MOTOR2_RIGHT_L_PIN PB0
+#define MOTOR2_RIGHT_L_PIN PD3
 
-#define MOTOR1_EN_PIN PD2
-#define MOTOR2_EN_PIN PD4
+#define MOTOR1_EN_PIN PD5
+#define MOTOR2_EN_PIN PD6
 
-#define OFFSET 3
-#define TURN_SPEED 255
-#define FWD_SPEED 60
+#define OFFSET 5
+#define TURN_SPEED 200
+#define FWD_SPEED 100
 
 int ir_sensor1_val = 0;
 int ir_sensor2_val = 0;
@@ -37,52 +37,63 @@ void setup() {
   pinMode(MOTOR1_LEFT_L_PIN, OUTPUT);
   pinMode(MOTOR2_RIGHT_L_PIN, OUTPUT);
   
-  analogWrite(MOTOR1_LEFT_PIN, 0);
-  analogWrite(MOTOR2_RIGHT_PIN, 0);
+  analogWrite(MOTOR1_EN_PIN, 0);
+  analogWrite(MOTOR2_EN_PIN, 0);
 
-  digitalWrite(MOTOR1_EN_PIN, 0);
-  digitalWrite(MOTOR2_EN_PIN, 0);  
+  digitalWrite(MOTOR1_LEFT_PIN, 0);
+  digitalWrite(MOTOR2_RIGHT_PIN, 0);  
   digitalWrite(MOTOR1_LEFT_L_PIN, 0);
   digitalWrite(MOTOR2_RIGHT_L_PIN, 0);  
 }
 
 void move_right()
 { 
-  digitalWrite(MOTOR1_EN_PIN, 1);
-  digitalWrite(MOTOR2_EN_PIN, 0);
+  analogWrite(MOTOR1_EN_PIN, TURN_SPEED);
+  analogWrite(MOTOR2_EN_PIN, TURN_SPEED + OFFSET);
   
-  analogWrite(MOTOR1_LEFT_PIN, TURN_SPEED);
-  analogWrite(MOTOR2_RIGHT_PIN, 0);
+  digitalWrite(MOTOR1_LEFT_PIN, 1);
+  digitalWrite(MOTOR2_RIGHT_PIN, 0);
+
+  digitalWrite(MOTOR1_LEFT_L_PIN, 0);
+  digitalWrite(MOTOR2_RIGHT_L_PIN, 1);  
   
 }
 
 void move_left()
 {
-  digitalWrite(MOTOR1_EN_PIN, 0);  
-  digitalWrite(MOTOR2_EN_PIN, 1);
+  analogWrite(MOTOR1_EN_PIN, TURN_SPEED);
+  analogWrite(MOTOR2_EN_PIN, TURN_SPEED + OFFSET);
+  
+  digitalWrite(MOTOR1_LEFT_PIN, 0);
+  digitalWrite(MOTOR2_RIGHT_PIN, 1);
 
-  analogWrite(MOTOR1_LEFT_PIN, 0);
-  analogWrite(MOTOR2_RIGHT_PIN, TURN_SPEED);  
-
+  digitalWrite(MOTOR1_LEFT_L_PIN, 1);
+  digitalWrite(MOTOR2_RIGHT_L_PIN, 0);  
 }
 
 void move_fwd()
 {
-  digitalWrite(MOTOR1_EN_PIN, 1);
-  digitalWrite(MOTOR2_EN_PIN, 1);
+  analogWrite(MOTOR1_EN_PIN, FWD_SPEED);
+  analogWrite(MOTOR2_EN_PIN, FWD_SPEED + OFFSET);
+  
+  digitalWrite(MOTOR1_LEFT_PIN, 1);
+  digitalWrite(MOTOR2_RIGHT_PIN, 1);
 
-  analogWrite(MOTOR1_LEFT_PIN, FWD_SPEED);
-  analogWrite(MOTOR2_RIGHT_PIN, FWD_SPEED + OFFSET);
+  digitalWrite(MOTOR1_LEFT_L_PIN, 0);
+  digitalWrite(MOTOR2_RIGHT_L_PIN, 0);  
     
 }
 
 void stop_movement()
 {
-  digitalWrite(MOTOR1_EN_PIN, 0);
-  digitalWrite(MOTOR2_EN_PIN, 0);
+  analogWrite(MOTOR1_EN_PIN, 0);
+  analogWrite(MOTOR2_EN_PIN, 0);
   
-  analogWrite(MOTOR1_LEFT_PIN, 0);
-  analogWrite(MOTOR2_RIGHT_PIN, 0);
+  digitalWrite(MOTOR1_LEFT_PIN, 0);
+  digitalWrite(MOTOR2_RIGHT_PIN, 0);
+
+  digitalWrite(MOTOR1_LEFT_L_PIN, 0);
+  digitalWrite(MOTOR2_RIGHT_L_PIN, 0);  
   
 }
 
