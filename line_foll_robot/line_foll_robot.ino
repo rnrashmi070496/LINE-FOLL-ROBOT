@@ -14,8 +14,8 @@
 #define TURN_SPEED 200
 #define FWD_SPEED 100
 
-int ir_sensor1_val = 0;
-int ir_sensor2_val = 0;
+int ir_right_sensor_val = 0;
+int ir_left_sensor_val = 0;
 int ir_sensor_bl_val = 0;
 
 bool is_mstimer_elapsed(long unsigned int * timer, uint16_t duration)
@@ -98,37 +98,47 @@ void stop_movement()
 }
 
 void loop() {
-static long unsigned int rotation_timer;
+static long unsigned int rotation_timer, fetch_timer;
 
-ir_sensor1_val = analogRead(IR_SENSOR1);
-ir_sensor2_val = analogRead(IR_SENSOR2);
+ir_left_sensor_val = analogRead(IR_SENSOR1);
+ir_right_sensor_val = analogRead(IR_SENSOR2);
 ir_sensor_bl_val = analogRead(IR_SENSOR3);
+static uint8_t val;
 
-if(ir_sensor_bl_val > 500 || ir_sensor2_val > 500 || ir_sensor1_val > 500)
+if(fetch_timer == 0)
 {
-  rotation_timer = millis();  
-  if(ir_sensor_bl_val > 500)
-  {
-    move_fwd();
-  }
-  else
-  {
-    if(ir_sensor2_val > 500)
-    {
-      // Serial.println("MOVE RIGHT");
-      move_right();
-    }
+  fetch_timer = millis();
+}
+else if(fetch_timer != 0 && is_mstimer_elapsed(&fetch_timer, 500))
+{
+  val = (((ir_sensor_bl_val)/500) * pow(2,2)) + (((ir_left_sensor_val)/500) * pow(2,1)) + (((ir_right_sensor_val)/500) * pow(2,0));
+  fetch_timer = 0;
+}
 
-    else if(ir_sensor1_val > 500)
-    {
-      // Serial.println("MOVE LEFT");
+if(val > 0)
+{
+  rotation_timer =  millis() ;
+  switch(val){
+    case 1:
+      move_right();
+      break;
+    
+    case 3:
+    case 2:
       move_left();
-    }
+      break;
+    
+    case 7:
+    case 5:
+    case 6:
+    case 4:
+      move_fwd();
+      break;
   }
 }
 else
 {
-  if(is_mstimer_elapsed(&rotation_timer, 3000))
+  if(is_mstimer_elapsed(&rotation_timer, 9000))
   {
     stop_movement(); 
   }  
